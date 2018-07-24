@@ -1,0 +1,33 @@
+This will be the new project structure for orlog
+Right now, there is probably a lot of path wierdness going on.
+
+This directory will eventually form the "base" of the entire project.
+This means that all submodules created for this project will be maintained
+from here.
+
+The project structure will be like this:
+Tidy, nice and maintainable...
+
+-| Root
+-| control script(s)?
+   perhaps just one, that accepts arguments...
+-| readme
+
+----|-logs
+
+----|resources # *
+----|----|data # data needed
+----|----|models # models used
+
+----|modules # codebase
+----|----| * modules
+
+----|venv # venv for project (packrat?)
+
+#######################################
+
+"control.py" examples:
+
+control.py classify $ID / $URL-LIST/$QUERY-LIST (csv) -r #retrain (data will be full-bodied)
+
+control.py s2v -output $MODEL_NAME # automatic? -f #full (all data will be used)
