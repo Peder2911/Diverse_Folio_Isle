@@ -55,8 +55,9 @@ class functions():
 
         print('Select analysis method:')
         print('classVecs -vectorizer -classifier -outFile')
+        print('clusterVecs -tracer -outFile')
         anFunction,anFunctionArgs = inputToFunction(self,
-                                                    ['classVecs'])
+                                                    ['classVecs','clusterVecs'])
         outFile = anFunctionArgs.pop()
 
         data = dFunction(*dFunctionArgs)
@@ -79,6 +80,7 @@ class functions():
         sqliteQuery_r = pipeProcess('rscript',
                                     './modules/Pattern/sqliteQuery.r',
                                     arguments = [dbFile,id])
+        
         return(sqliteQuery_r.stdout)
 
 
@@ -103,6 +105,21 @@ class functions():
 
         prepDat_r = prepDat(classify_r.stdout)
         return(prepDat_r)
+
+    def clusterVecs(self,data):
+
+        s2v = os.path.abspath('./modules/sent2vec/fasttext')
+        tracerFile = os.path.abspath('./resources/data/training/tracerData/1_2_hot_891.txt')
+
+        vectorizer = myCli.fileMenu('resources/models/embedders',
+                                    prompt = 'Select vectorizer model',
+                                    filetype = 'bin')
+        cluster_r = pipeProcess('rscript',
+                                './modules/Pattern/clusterPipe.r',
+                                [tracerFile,s2v,vectorizer],
+                                input = data)
+        return(cluster_r)
+
 
     #####################################
     # Deprecated functions

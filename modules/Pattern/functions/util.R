@@ -18,15 +18,3 @@ read.csv.folder<-function(folder,columns,sep){
 
   out
 }
-
-
-
-#sentences <- read.csv.folder('data/training/18_07_12/classifiedSentences/',columns=c('sent','class'),sep=';')
-#sentences$sent <- str_replace_all(sentences$sent,'\n',' ')
-#sentences$sent <- system(command = '../bin/python util/stdTokenize.py',intern = TRUE,input = sentences$sent)
-#sentences <- sentences[sentences$sent!='' & sentences$class <=1,]
-
-#sentences$class<-sentences$class%>%
-#  as.logical()%>%
-#  ifelse('yes','no')%>%
-#  as.factor()

@@ -1,6 +1,6 @@
 
-library(tidyr,warn.conflicts = FALSE)
-library(stringr,warn.conflicts = FALSE)
+require(tidyr,warn.conflicts = FALSE)
+require(stringr,warn.conflicts = FALSE)
 
 sentenceVectors <- function(sentences,s2vPath,modelPath){
 
