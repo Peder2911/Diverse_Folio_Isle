@@ -1,8 +1,0 @@
-26/07-10:12:14|DEBUG - running /Users/peder/Code/PRIOcode/newsAnalysis_b/modules/Able_Glooming_Pasture/pipes/stemmer.py
-26/07-10:12:16|CRITICAL - Traceback (most recent call last):
-  File "././pipes/stemmer.py", line 15, in <module>
-    line = sys.stdin.readLine()
-AttributeError: '_io.TextIOWrapper' object has no attribute 'readLine'
-
-26/07-10:13:25|DEBUG - running /Users/peder/Code/PRIOcode/newsAnalysis_b/modules/Able_Glooming_Pasture/pipes/stemmer.py
-26/07-10:16:39|DEBUG - running /Users/peder/Code/PRIOcode/newsAnalysis_b/modules/Able_Glooming_Pasture/pipes/cleaner.py
