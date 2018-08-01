@@ -1,0 +1,11 @@
+Able_Glooming_Pasture
+
+AGP is a series of tubes for text processing.
+It performs a number of tasks, including
+- Stemming
+- Removing symbols and numbers
+- ASCII-fying
+- Named entity recognition and tokenization
+
+All of these pipes are designed to improve the text-mining value of texts.
+Able Glooming Pasture is an anagram for Simple Robot Language.

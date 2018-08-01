@@ -80,7 +80,7 @@ class functions():
         sqliteQuery_r = pipeProcess('rscript',
                                     './modules/Pattern/sqliteQuery.r',
                                     arguments = [dbFile,id])
-        
+
         return(sqliteQuery_r.stdout)
 
 
