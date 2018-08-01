@@ -42,16 +42,16 @@ class functions():
     with open('./resources/spice/banner.txt') as file:
         print(file.read())
     print('By Peder G. Landsverk 2018')
-    print('Peace Research Institute of Oslo')
+    print('Peace Research Institute Oslo')
     print('#'*38+'\n')
 
     def analyze(self):
         print('Select data source:')
-        print('csv -dataFile')
-        print('query -source -\"query\"')
-        print('dbDat -dbFile -id')
+        print('csvDat -dataFile')
+        print('queryDat -source -\"query\"')
+#        print('dbDat -dbFile -id')
         dFunction,dFunctionArgs = inputToFunction(self,
-                                                  ['csvDat','query','dbDat'])
+                                                  ['csvDat','queryDat'])
 
         print('Select analysis method:')
         print('classVecs -vectorizer -classifier -outFile')
@@ -83,6 +83,23 @@ class functions():
 
         return(sqliteQuery_r.stdout)
 
+    def queryDat(self,source,query):
+        loc,startYr,endYr = query.split('_')
+
+        args = [source,startYr,endYr]
+        if source == 'nyt':
+            args += ['glocations.contains',loc]
+        else:
+            args += [loc]
+
+        getArticles_py = pipeProcess('python',
+                                     './modules/Montanus/getArticles.py',
+                                     arguments = args)
+        jsonToCsv_r = pipeProcess('rscript',
+                                  './modules/Pattern/jsonToCsv.r',
+                                  input = getArticles_py.stdout)
+
+        return(jsonToCsv_r.stdout)
 
     #####################################
     # Analysis functions
