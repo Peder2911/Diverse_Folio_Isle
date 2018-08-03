@@ -38,6 +38,7 @@ class FileError(Exception):
 #####################################
 
 class functions():
+
     print('\n'+'#'*38)
     with open('./resources/spice/banner.txt') as file:
         print(file.read())
@@ -46,181 +47,100 @@ class functions():
     print('#'*38+'\n')
 
     def analyze(self):
-        print('Select data source:')
-        print('csvDat -dataFile')
-        print('queryDat -source -\"query\"')
-#        print('dbDat -dbFile -id')
-        dFunction,dFunctionArgs = inputToFunction(self,
-                                                  ['csvDat','queryDat'])
 
-        print('Select analysis method:')
-        print('classVecs -vectorizer -classifier -outFile')
-        print('clusterVecs -tracer -outFile')
-        anFunction,anFunctionArgs = inputToFunction(self,
-                                                    ['classVecs','clusterVecs'])
-        outFile = anFunctionArgs.pop()
+        #####################################
+        # Sourcing functions
 
-        data = dFunction(*dFunctionArgs)
-        analyzed = anFunction(data).stdout.decode()
+        def csvDat():
+            dataFile = input('Please enter datafile\n~ ')
+
+            with open(dataFile) as file:
+                data = file.read()
+            return(data.encode())
+
+        def dbDat():
+            dbFile = input('Please enter dbFile\n~ ')
+            id = input('Please enter ID (* for all)\n~ ')
+
+            dbFile = os.path.abspath(dbFile)
+            sqliteQuery_r = pipeProcess('rscript',
+                                        './modules/Pattern/sqliteQuery.r',
+                                        arguments = [dbFile,id])
+
+            return(sqliteQuery_r.stdout)
+
+        def queryDat():
+            source = myCli.menu(['nyt','guardian'],prompt='Please select source')
+            query = input('Please enter query\n~ ')
+
+            loc,startYr,endYr = query.split('_')
+
+            args = [source,startYr,endYr]
+            if source == 'nyt':
+                args += ['glocations.contains',loc]
+            else:
+                args += [loc]
+
+            getArticles_py = pipeProcess('python',
+                                         './modules/Montanus/getArticles.py',
+                                         arguments = args)
+            jsonToCsv_r = pipeProcess('rscript',
+                                      './modules/Pattern/jsonToCsv.r',
+                                      input = getArticles_py.stdout)
+
+            return(jsonToCsv_r.stdout)
+
+        #####################################
+        # Analysis functions
+
+        def classVecs(data):
+
+            s2v = os.path.abspath('./modules/sent2vec/fasttext')
+
+            vectorizer = myCli.fileMenu('resources/models/embedders',
+                                        prompt = 'Select vectorizer model',
+                                        filetype = 'bin')
+            classifier = myCli.fileMenu('resources/models/classifiers',
+                                        prompt = 'Select classifier model',
+                                        filetype = 'rds')
+
+            classify_r = pipeProcess('rscript',
+                                     './modules/Pattern/classify.r',
+                                     [s2v,vectorizer,classifier],
+                                     input = data)
+
+            outData = classify_r.stdout.decode()
+            return(outData)
+
+        def clusterVecs(data):
+            tracerFile = input('Please provide a tracer-file:\n~ ')
+            s2v = os.path.abspath('./modules/sent2vec/fasttext')
+
+            vectorizer = myCli.fileMenu('resources/models/embedders',
+                                        prompt = 'Select vectorizer model',
+                                        filetype = 'bin')
+            cluster_r = pipeProcess('rscript',
+                                    './modules/Pattern/clusterPipe.r',
+                                    [tracerFile,s2v,vectorizer],
+                                    input = data)
+
+            outData = cluster_r.stdout.decode()
+            return(outData)
+
+        #####################################
+
+        dFunction = myCli.functionMenu([csvDat,dbDat,queryDat])
+        anFunction = myCli.functionMenu([classVecs,clusterVecs])
+
+        outFile = input('Please enter outfile:\n')
+
+        data = dFunction()
+        analyzed = anFunction(data)
 
         cl.debug('writing data to %s'%(outFile))
+
         with open(outFile,'w') as file:
             file.write(analyzed)
-
-    #####################################
-    # Sourcing functions
-
-    def csvDat(self,dataFile):
-        with open(dataFile) as file:
-            data = file.read()
-        return(data.encode())
-
-    def dbDat(self,dbFile,id):
-        dbFile = os.path.abspath(dbFile)
-        sqliteQuery_r = pipeProcess('rscript',
-                                    './modules/Pattern/sqliteQuery.r',
-                                    arguments = [dbFile,id])
-
-        return(sqliteQuery_r.stdout)
-
-    def queryDat(self,source,query):
-        loc,startYr,endYr = query.split('_')
-
-        args = [source,startYr,endYr]
-        if source == 'nyt':
-            args += ['glocations.contains',loc]
-        else:
-            args += [loc]
-
-        getArticles_py = pipeProcess('python',
-                                     './modules/Montanus/getArticles.py',
-                                     arguments = args)
-        jsonToCsv_r = pipeProcess('rscript',
-                                  './modules/Pattern/jsonToCsv.r',
-                                  input = getArticles_py.stdout)
-
-        return(jsonToCsv_r.stdout)
-
-    #####################################
-    # Analysis functions
-
-    def classVecs(self,data):
-
-        s2v = os.path.abspath('./modules/sent2vec/fasttext')
-
-        vectorizer = myCli.fileMenu('resources/models/embedders',
-                                    prompt = 'Select vectorizer model',
-                                    filetype = 'bin')
-        classifier = myCli.fileMenu('resources/models/classifiers',
-                                    prompt = 'Select classifier model',
-                                    filetype = 'rds')
-
-        classify_r = pipeProcess('rscript',
-                                 './modules/Pattern/classify.r',
-                                 [s2v,vectorizer,classifier],
-                                 input = data)
-
-        prepDat_r = prepDat(classify_r.stdout)
-        return(prepDat_r)
-
-    def clusterVecs(self,data):
-
-        s2v = os.path.abspath('./modules/sent2vec/fasttext')
-        tracerFile = os.path.abspath('./resources/data/training/tracerData/1_2_hot_891.txt')
-
-        vectorizer = myCli.fileMenu('resources/models/embedders',
-                                    prompt = 'Select vectorizer model',
-                                    filetype = 'bin')
-        cluster_r = pipeProcess('rscript',
-                                './modules/Pattern/clusterPipe.r',
-                                [tracerFile,s2v,vectorizer],
-                                input = data)
-        return(cluster_r)
-
-
-    #####################################
-    # Deprecated functions
-
-    def csv(self,dataFile,mod_e,mod_c,outFile):
-
-        with open(dataFile) as file:
-            data = file.read()
-        data = data.encode()
-
-        s2v = os.path.abspath('./modules/sent2vec/fasttext')
-        mod_e,mod_c,outFile = (os.path.abspath(p) for p in [mod_e,mod_c,outFile])
-
-        #####################################
-
-        classify_r = classify(data,s2v,mod_e,mod_c)
-        prepDat_r = prepDat(classify_r.stdout)
-
-        #####################################
-
-        with open(outFile,'w') as file:
-            file.write(prepDat_r.stdout.decode())
-
-    def query(self,src,query,mod_e,mod_c,outFile):
-
-        fl.debug('running %s'%(query))
-        startYr,endYr,loc = query.split(' ')
-
-        s2v = os.path.abspath('./modules/sent2vec/fasttext')
-        mod_e,mod_c,outFile = (os.path.abspath(p) for p in [mod_e,mod_c,outFile])
-
-        getArticles_py = ['python','./modules/Montanus/getArticles.py']
-        if src == 'nyt':
-            getArticles_py += [src,str(startYr),str(endYr),'glocations.contains',loc]
-        elif src == 'guardian':
-            getArticles_py += [src,str(startYr),str(endYr),loc]
-
-        getArticles_py = subprocess.run(getArticles_py,
-                                        stdout = subprocess.PIPE,
-                                        stderr = subprocess.PIPE)
-
-        #####################################
-
-        jsonToCsv_r = jsonToCsv(getArticles_py.stdout)
-        classify_r = classify(jsonToCsv_r.stdout,s2v,mod_e,mod_c)
-        prepDat_r = prepDat(classify_r.stdout)
-
-        #####################################
-
-        fl.debug('writing to %s'%(outFile))
-        with open(outFile,'w') as file:
-            file.write(prepDat_r.stdout.decode())
-
-#        print(prepDat_r.stdout.decode())
-
-    def db(self,dbFile,id,mod_emb,mod_cla,outFile):
-
-        dbFile = os.path.abspath(dbFile)
-        s2v = os.path.abspath('./modules/sent2vec/fasttext')
-        mod_emb = os.path.abspath(mod_emb)
-        mod_cla = os.path.abspath(mod_cla)
-
-        checkFiles(dbFile,s2v,mod_emb,mod_cla)
-
-        sqliteQuery_r = pipeProcess('rscript',
-                                    './modules/Pattern/sqliteQuery.r',
-                                    arguments = [dbFile,id])
-
-        #####################################
-
-        classify_r = pipeProcess('rscript',
-                                 './modules/Pattern/classify.r',
-                                 arguments = [s2v,mod_emb,mod_cla],
-                                 input = sqliteQuery_r.stdout)
-
-        prepDat_r = pipeProcess('rscript',
-                                './modules/Pattern/prepDat.r',
-                                input = classify_r.stdout)
-
-        cl.debug('writing data to '+outFile)
-        with open(outFile,'w') as file:
-            file.write(prepDat_r.stdout.decode())
-
-#####################################
 
 def inputToFunction(nameSpace,choices):
     selection = ['']
@@ -264,62 +184,6 @@ def checkFiles(*args):
         if not os.path.isfile(file):
             cl.critical('Could not find file: ' + file)
             raise FileError
-
-'''def sqliteQuery(dbFile,id):
-    sqliteQuery_r = pipeProcess('rscript',
-                                './modules/Pattern/sqliteQuery.r',
-                                arguments = [dbFile,id])
-    return(sqliteQuery_r)'''
-
-def classify(data,s2v,mod_e,mod_c):
-
-    classify_r = ['rscript','./modules/Pattern/classify.r']
-    classify_r += [s2v,mod_e,mod_c]
-    classify_r = subprocess.run(classify_r,
-                                stdout = subprocess.PIPE,
-                                stderr = subprocess.PIPE,
-                                input = data)
-    try:
-        classify_r.check_returncode()
-    except subprocess.CalledProcessError:
-        cl.critical(classify_r.stderr.decode())
-        raise PipeError
-
-    fl.debug(classify_r.stderr.decode())
-
-    return(classify_r)
-
-def prepDat(data):
-    prepDat_r = ['rscript','./modules/Pattern/prepDat.r']
-    prepDat_r = subprocess.run(prepDat_r,
-                                 stdout = subprocess.PIPE,
-                                 stderr = subprocess.PIPE,
-                                 input = data)
-    try:
-        prepDat_r.check_returncode()
-    except subprocess.CalledProcessError:
-        cl.critical(prepDat_r.stderr.decode())
-        raise PipeError
-
-    fl.debug(prepDat_r.stderr.decode())
-
-    return(prepDat_r)
-
-def jsonToCsv(data):
-    jsonToCsv_r = ['rscript','./modules/Pattern/jsonToCsv.r']
-    jsonToCsv_r = subprocess.run(jsonToCsv_r,
-                                 stdout = subprocess.PIPE,
-                                 stderr = subprocess.PIPE,
-                                 input = data)
-    try:
-        jsonToCsv_r.check_returncode()
-    except subprocess.CalledProcessError:
-        cl.critical(jsonToCsv_r.stderr.decode())
-        raise PipeError
-
-    fl.debug(jsonToCsv_r.stderr.decode())
-
-    return(jsonToCsv_r)
 
 #####################################
 
