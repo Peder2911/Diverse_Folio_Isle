@@ -12,10 +12,13 @@ def menu(options,prompt='make a selection'):
     print(prompt)
     for number,option in enumerate(options):
         print(str(number) + ' - ' + str(option))
-    selectionNo = sys.maxsize
 
+    selectionNo = sys.maxsize
     while not 0 <= selectionNo <= len(options):
-        selectionNo = int(input('~ '))
+        try:
+            selectionNo = int(input('~ '))
+        except ValueError:
+            print('please enter a number')
 
     return(options[selectionNo])
 

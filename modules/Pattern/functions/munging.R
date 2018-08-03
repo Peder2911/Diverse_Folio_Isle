@@ -1,5 +1,5 @@
-library(stringr,warn.conflicts = FALSE)
-library(dplyr,warn.conflicts = FALSE)
+suppressPackageStartupMessages(library(stringr,warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(dplyr,warn.conflicts = FALSE))
 
 as.sentence.df <- function(df,sentence.col = 'body',sep='\n'){
   dfs <- apply(df,1,function(row){
@@ -40,17 +40,17 @@ as.dtm <- function(df,textCol = 'sent',type='count',freqTerms=FALSE,...){
 read.csv.folder<-function(folder,columns,sep){
   files <- list.files(folder)
   files <- files[str_detect(files,'.csv')]
-  
+
   first <- paste(folder,files[1],sep='/')
   out <- read.csv(first,sep = sep,stringsAsFactors = FALSE)%>%
     select(columns)
-  
+
   for(file in files[-1]){
     tgtFile <- paste(folder,file,sep='/')
     tmpFile <- read.csv(tgtFile,sep=sep,stringsAsFactors = FALSE)%>%
       select(columns)
     out <- rbind(out,tmpFile)
   }
-  
+
   out
 }

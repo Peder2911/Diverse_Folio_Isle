@@ -1,4 +1,4 @@
-suppressWarnings(library(RSQLite))
+suppressPackageStartupMessages((library(RSQLite))
 
 dbFile <- commandArgs(trailingOnly = TRUE)[1]
 id <- commandArgs(trailingOnly = TRUE)[2]

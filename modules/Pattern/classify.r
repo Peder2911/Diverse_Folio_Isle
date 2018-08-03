@@ -1,6 +1,6 @@
-library(magrittr,warn.conflicts = FALSE)
-library(stringr,warn.conflicts = FALSE)
-library(e1071,warn.conflicts = FALSE)
+suppressPackageStartupMessages(library(magrittr,warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(stringr,warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(e1071,warn.conflicts = FALSE))
 
 myPath <- commandArgs()[4]%>%
   str_sub(8)%>%

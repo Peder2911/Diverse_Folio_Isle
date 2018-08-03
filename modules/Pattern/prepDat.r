@@ -1,4 +1,4 @@
-library(stringr)
+suppressPackageStartupMessages(library(stringr))
 
 dat <- read.csv(text = readLines('stdin'))
 

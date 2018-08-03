@@ -127,10 +127,15 @@ class functions():
             outData = cluster_r.stdout.decode()
             return(outData)
 
+        def agpTreat():
+            pass
+
         #####################################
 
-        dFunction = myCli.functionMenu([csvDat,dbDat,queryDat])
-        anFunction = myCli.functionMenu([classVecs,clusterVecs])
+        dFunction = myCli.functionMenu([csvDat,dbDat,queryDat],
+                                       prompt = 'Select data source')
+        anFunction = myCli.functionMenu([classVecs,clusterVecs],
+                                       prompt = 'Select analysis method')
 
         outFile = input('Please enter outfile:\n')
 
