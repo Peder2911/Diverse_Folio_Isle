@@ -1,33 +1,24 @@
-This will be the new project structure for orlog
-Right now, there is probably a lot of path wierdness going on.
+Diverse Folio Isle is a framework for doing text-mining using the Montanus scraper,
+or other data sources (currently supports csv-files and sqlite .db-files).
 
-This directory will eventually form the "base" of the entire project.
-This means that all submodules created for this project will be maintained
-from here.
+The program has a simple CLI that is accessed through the deScry.py script.
+Documentation will be a priority once the project is in alpha.
 
-The project structure will be like this:
-Tidy, nice and maintainable...
+Note:
+Batteries are not included.
+You need two things for the system to work:
 
--| Root
--| control script(s)?
-   perhaps just one, that accepts arguments...
--| readme
+1 ) - A keys.json file must be added to the Montanus-module, containing your API
+keys for the different APIs. The path for this file is:
+./modules/Montanus/configFiles/keys.json
 
-----|-logs
+2 ) - Vectorization (.bin) and classification (.rds) models are currently not included.
+You could either train your own models using sent2vec and R, or send me an email @
+pglandsverk@gmail.com.
+The paths in which to put your models are:
+./resources/models/classifiers (for .rds classifiers)
+./resources/models/embedders (for sent2vec .bin-files)
 
-----|resources # *
-----|----|data # data needed
-----|----|models # models used
+Please don't hesitate to contact me if you have any questions about the project.
 
-----|modules # codebase
-----|----| * modules
-
-----|venv # venv for project (packrat?)
-
-#######################################
-
-"control.py" examples:
-
-control.py classify $ID / $URL-LIST/$QUERY-LIST (csv) -r #retrain (data will be full-bodied)
-
-control.py s2v -output $MODEL_NAME # automatic? -f #full (all data will be used)
+Peder Landsverk @ PRIO 2018
