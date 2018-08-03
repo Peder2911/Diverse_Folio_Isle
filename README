@@ -20,5 +20,5 @@ The paths in which to put your models are:
 ./resources/models/embedders (for sent2vec .bin-files)
 
 Please don't hesitate to contact me if you have any questions about the project.
-
+---
 Peder Landsverk @ PRIO 2018
