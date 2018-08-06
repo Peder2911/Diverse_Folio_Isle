@@ -9,7 +9,7 @@ modules/dbTools
 logs/*
 !logs/.gitkeep
 
-autogrep.py
+buildDB.py
 
 resources/models/*
 !resources/models/.gitkeep
@@ -22,3 +22,4 @@ resources/temp
 venv/*
 
 __pycache__/*
+*.pyc

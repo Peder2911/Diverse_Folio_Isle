@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from modules.util import dbTools,dataTools
+from modules.util import dbTools,dataTools,processHelpers
 import fire
 import subprocess
+import sys
 
 class functions():
 
@@ -10,12 +11,13 @@ class functions():
         dbTools.dbFacts(dbFile)
 
     def populateDB(self,source,rosterFile,dbFile):
-        call = ['python','./autogrep.py',source,rosterFile,dbFile]
 
-        try:
-            subprocess.run(call)
-        except SubprocessError:
+        try:            
+            call = ['python','./buildDB.py',source,rosterFile,dbFile]
+            processHelpers.run(call,errTo=sys.stderr)
+        except subprocess.SubprocessError:
             print('oh no! (subprocess error)') #TODO error handling
+            sys.exit(1)
 
     def getSentences(self,dbFile,outFile):
         res = dbTools.bulkGet(dbFile,'sentences','body')
