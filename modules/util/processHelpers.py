@@ -1,7 +1,14 @@
 import sys
 import subprocess
 
+from collections import deque
+
 def run(cmd,errTo = sys.stderr,**kwargs):
+    cmd = deque(cmd)
+    program = cmd.popleft()
+    cmd.appendleft('-u')
+    cmd.appendleft(program)
+
     p = subprocess.Popen(cmd,stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE,
                              **kwargs)

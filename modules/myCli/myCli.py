@@ -8,7 +8,10 @@ class FileError(Exception):
     pass
 
 
-def menu(options,prompt='make a selection'):
+def menu(options,prompt='make a selection',leadNl = True):
+    if leadNl:
+        prompt = '\n' + prompt
+        
     print(prompt)
     for number,option in enumerate(options):
         print(str(number) + ' - ' + str(option))
@@ -22,8 +25,16 @@ def menu(options,prompt='make a selection'):
 
     return(options[selectionNo])
 
-def functionMenu(functions,prompt = 'select function'):
+def functionMenu(functions,prompt = 'select function',zeroOption = True):
+
+    def noneFun():
+        return(None)
+
     fNames = {fun.__name__:fun for fun in functions}
+
+    if zeroOption:
+        fNames.update({'None':noneFun})
+
     selection = menu([*fNames.keys()],prompt = prompt)
     return(fNames[selection])
 
