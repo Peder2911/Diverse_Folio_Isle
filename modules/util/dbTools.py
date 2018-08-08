@@ -73,9 +73,6 @@ def dbFacts(dbFile):
     c.execute('SELECT body FROM sentences')
     entries = c.fetchall()
     nrow = len(entries)
-    sentences = [b[0].split('\n') for b in entries]
-    sentences = list(itertools.chain.from_iterable(sentences))
-    nsent = len(sentences)
 
     c.execute('SELECT id FROM sentences')
     ids = c.fetchall()
@@ -85,7 +82,6 @@ def dbFacts(dbFile):
     print('#'*10)
     print('\n')
     print('Number of entries : %i'%(nrow))
-    print('Number of sentences : %i'%(nsent))
     print('Number of unique queries : %i'%(uniqueIds_n))
     for query in uniqueIds:
         print('--|%s'%(query))

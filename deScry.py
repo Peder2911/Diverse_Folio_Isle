@@ -57,25 +57,7 @@ class main():
         ##################
 
         #!
-        def constructNlSep():
-            pass
-            def nlSep(data):
-                call = ['python','./modules/pattern/pipes/toNlsep.py']
-                p = subprocess.run(call,
-                                   stdout = subprocess.PIPE,
-                                   stderr = subprocess.PIPE,
-                                   input = data)
-                err = p.stderr.decode()
 
-                if err != '':
-                    for line in err.split('\n'):
-                        cl.warning(line)
-
-                with open('testResources/foo.txt','w') as file:
-                    file.write(p.stdout.decode())
-
-                return(p.stdout)
-            return(nlSep)
 
         #!
 

@@ -22,7 +22,10 @@ def nlSepSentences(text):
     return(text)
 
 if __name__ == '__main__':
-
+    '''
+    Hacks to list-of-dictionaries format
+    '''
+    
     ff = StringIO(sys.stdin.read())
     reader = csv.reader(ff)
     names = next(reader)
@@ -46,7 +49,7 @@ if __name__ == '__main__':
                                  stdout = subprocess.PIPE,
                                  stderr = subprocess.PIPE,
                                  input = data.encode())
-                                 
+
     err = jsonToCsv_r.stderr.decode()
     if err != '':
         for line in err.split('\n'):

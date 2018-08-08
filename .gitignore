@@ -8,6 +8,7 @@ out.csv
 cl.csv
 go
 o
+o_*
 
 test*
 modules/depr/*

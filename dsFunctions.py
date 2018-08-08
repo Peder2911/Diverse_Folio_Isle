@@ -210,6 +210,46 @@ def constructClassVecs():
 
     return(classVecs)
 
+def constructNlSep():
+
+    separate = 'init'
+    while separate.lower() not in ['yes','y','no','n','skipnl']:
+        separate = input('\nSeparate sentences? (yes/no)\n~ ')
+
+    skip = separate in ['skipnl']
+    separate = separate in ['yes','y']
+
+    def nlSep(data):
+
+        if not skip:
+            call = ['python','./modules/pattern/pipes/toNlsep.py']
+            p = subprocess.run(call,
+                               stdout = subprocess.PIPE,
+                               stderr = subprocess.PIPE,
+                               input = data)
+            err = p.stderr.decode()
+            data = p.stdout
+
+            if err != '':
+                for line in err.split('\n'):
+                    cl.warning(line)
+
+        if separate or skip:
+            call = ['rscript','./modules/pattern/bodyToSentence.R']
+            p = subprocess.run(call,
+                               stdout = subprocess.PIPE,
+                               stderr = subprocess.PIPE,
+                               input = data)
+            err = p.stderr.decode()
+            data = p.stdout
+
+            if err != '':
+                for line in err.split('\n'):
+                    cl.warning(line)
+
+        return(data)
+    return(nlSep)
+
 #####################################
 def constructClusterVecs():
 
