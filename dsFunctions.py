@@ -53,6 +53,11 @@ def checkFiles(*args):
             raise FileError
 
 def stringToStdFormat(string):
+    '''
+    Converts a csv. formatted string into the list-of-dictionaries format
+    used by Diverse_Folio_Isle and Able_Glooming_Pasture
+    '''
+
     fauxFile = StringIO(string)
 
     with fauxFile as csvFile:
@@ -72,6 +77,10 @@ def stringToStdFormat(string):
 
 #####################################
 # Sourcing functions
+'''
+These functions return bytes
+'''
+
 def constructCsvDat():
     dataFile = input('Please enter datafile\n~ ')
 
@@ -126,7 +135,55 @@ def constructQueryDat():
     return(queryDat)
 
 #####################################
+# Treatment functions
+'''
+These functions return bytes
+'''
+
+def constructAgpTreat():
+    '''
+    Recieves encoded data in .csv format
+    '''
+
+    options = input('Options for AGP:\n~')
+    options = options.split(' ')
+
+    def agpTreat(data):
+
+        data = stringToStdFormat(data.decode())
+        data = json.dumps(data)
+
+        def agpProcess(data,command):
+            p = pipeProcess('python',
+                            './modules/Able_Glooming_Pasture/abGloPa.py',
+                            [command],
+                            input=data.encode())
+            return(p)
+
+        if '-c' in options or '--clean' in options:
+            p = agpProcess(data,'clean')
+        if '-ne' in options or '--ner' in options:
+            p = agpProcess(data,'ner')
+        if '-s' in options or '--stem' in options:
+            p = agpProcess(data,'stem')
+        if '-no' in options or '--normalize' in options:
+            p = agpProcess(data,'normalize')
+
+        jsonToCsv_r = pipeProcess('rscript',
+                                  './modules/Pattern/jsonToCsv.r',
+                                  input = p.stdout)
+
+        result = jsonToCsv_r.stdout
+        return(result)
+
+    return(agpTreat)
+
+#####################################
 # Analysis functions
+'''
+These functions return strings
+'''
+
 def constructClassVecs():
 
     s2v = os.path.abspath('./modules/sent2vec/fasttext')
@@ -245,33 +302,3 @@ def constructPatternSearch():
         return(result)
 
     return(patternSearch)
-
-#####################################
-# Treatment functions
-def constructAgpTreat():
-
-    def agpProcess(data,command):
-        data = pipeProcess('python',
-                           './modules/Able_Glooming_Pasture/abGloPa.py',
-                           [command],
-                           input=data)
-        return(data)
-
-    options = input('Options for AGP:\n~')
-    options = options.split(' ')
-
-    def agpTreat(data):
-        if '-c' in options or '--clean' in options:
-            p = agpProcess(data,'clean')
-        if '-n' in options or '--ner' in options:
-            p = agpProcess(data,'ner')
-        if '-s' in options or '--stem' in options:
-            p = agpProcess(data,'stem')
-        if '-n' in options or '--normalize' in options:
-            p = agpProcess(data,'normalize')
-
-        return(p.stdout)
-
-    return(agpTreat)
-
-#####################################
