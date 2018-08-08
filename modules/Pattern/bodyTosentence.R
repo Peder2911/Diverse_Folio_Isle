@@ -13,3 +13,5 @@ dat <- read.csv(text = readLines('stdin'),stringsAsFactors=FALSE)%>%
   rename(body = sentence)
 
 write.csv(dat,row.names = FALSE)
+
+# gitme
