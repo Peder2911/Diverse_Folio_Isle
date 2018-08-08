@@ -191,7 +191,7 @@ def constructPatternSearch():
 
     def search(data,field,engine,pattern):
 
-        patternOrsAnds = [pat.split('and') for pat in pattern.split('or')]
+        patternOrsAnds = [pat.split(' and ') for pat in pattern.split(' or ')]
 
         result = []
         for entry in data:
@@ -205,7 +205,11 @@ def constructPatternSearch():
 
                     pattern = andClause.strip()
                     if engine == 'regex':
-                        andMatch.append(re.search(pattern,entry[field]))
+                        m = re.search(pattern,entry[field])
+                        if m:
+                            cl.debug(m[0])
+                        andMatch.append(m)
+
                     elif engine == 'glob':
                         andMatch.append(fnSearch(entry[field],pattern))
                     else:
@@ -258,15 +262,15 @@ def constructAgpTreat():
 
     def agpTreat(data):
         if '-c' in options or '--clean' in options:
-            data = agpProcess(data,'clean')
+            p = agpProcess(data,'clean')
         if '-n' in options or '--ner' in options:
-            data = agpProcess(data,'ner')
+            p = agpProcess(data,'ner')
         if '-s' in options or '--stem' in options:
-            data = agpProcess(data,'stem')
+            p = agpProcess(data,'stem')
         if '-n' in options or '--normalize' in options:
-            data = agpProcess(data,'normalize')
+            p = agpProcess(data,'normalize')
 
-        return(data)
+        return(p.stdout)
 
     return(agpTreat)
 

@@ -1,5 +1,14 @@
 __pycache__
 
+resources/depr/*
+resources/temp/*
+!resources/temp/.gitkeep
+
+out.csv
+cl.csv
+go
+o
+
 test*
 modules/depr/*
 modules/xpdf*
