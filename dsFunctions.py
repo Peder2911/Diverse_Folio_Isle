@@ -222,7 +222,7 @@ def constructNlSep():
     def nlSep(data):
 
         if not skip:
-            call = ['python','./modules/pattern/pipes/toNlsep.py']
+            call = ['python','./modules/Pattern/pipes/toNlsep.py']
             p = subprocess.run(call,
                                stdout = subprocess.PIPE,
                                stderr = subprocess.PIPE,
@@ -235,7 +235,7 @@ def constructNlSep():
                     cl.warning(line)
 
         if separate or skip:
-            call = ['rscript','./modules/pattern/bodyToSentence.R']
+            call = ['rscript','./modules/Pattern/bodyToSentence.R']
             p = subprocess.run(call,
                                stdout = subprocess.PIPE,
                                stderr = subprocess.PIPE,
@@ -328,8 +328,8 @@ def constructPatternSearch():
     def patternSearch(data,field = field,engine = engine,pattern = pattern):
         data = stringToStdFormat(data.decode())
 
-        with open('testResources/testjson.json','w') as jFile:
-            json.dump(data,jFile)
+#        with open('testResources/testjson.json','w') as jFile:
+#            json.dump(data,jFile)
 
         data = search(data,field,engine,pattern)
         data = json.dumps(data)+'\n'
