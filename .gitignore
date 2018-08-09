@@ -4,6 +4,8 @@ resources/depr/*
 resources/temp/*
 !resources/temp/.gitkeep
 
+.t/*
+
 out.csv
 cl.csv
 go

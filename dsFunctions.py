@@ -75,18 +75,74 @@ def stringToStdFormat(string):
 
     return(result)
 
+def jsonToCsv(jsonString):
+    try:
+        jsonString = jsonString.encode()
+        jsonString += b'\n'
+    except AttributeError: #catch if not dumped
+        jsonString = json.dumps(jsonString)
+        jsonToCsv(jsonString)
+
+    jsonToCsv_r = pipeProcess('rscript',
+                              './modules/Pattern/jsonToCsv.r',
+                              input = jsonString)
+    return(jsonToCsv_r.stdout.decode())
+
 #####################################
 # Sourcing functions
 '''
-These functions return bytes
+These functions return .csv data in bytes
 '''
 
 def constructCsvDat():
     dataFile = input('Please enter datafile\n~ ')
+    std = {'headline','body','source','date','id'}
+
+    def validateCsv(data):
+        '''
+        Checks if csv has required columns.
+        If not, adds required columns with empty fields and complains.
+        '''
+        stdRow = {n:'' for n in std}
+
+        def validateRow(row):
+            columns = set(row.keys())
+            val = std == columns
+            missing = std - columns
+            if missing == std:
+                val = None
+                cl.warning('%s has no valid columns'%(dataFile))
+            else:
+                [cl.warning('Missing %s; adding defaults'%(m)) for m in missing]
+            return(val)
+
+        def fillRow(row):
+            newRow = dict(stdRow)
+            for field in row:
+                if field in std:
+                    newRow.update({field:row[field]})
+                else:
+                    pass
+            return(newRow)
+
+        data = stringToStdFormat(data)
+        val = validateRow(data[0])
+
+        if val is False: # Need to fill some fields
+            data = [fillRow(r) for r in data]
+            #TODO add option to map std. column names to new columns
+        elif val is None: # No valid fields
+            data = [stdRow]
+
+        data = jsonToCsv(json.dumps(data))
+
+        return(data)
+
 
     def csvDat(dataFile = dataFile):
         with open(dataFile) as file:
             data = file.read()
+        data = validateCsv(data)
         return(data.encode())
 
     return(csvDat)
@@ -304,7 +360,7 @@ def constructPatternSearch():
                     if engine == 'regex':
                         m = re.search(pattern,entry[field])
                         if m:
-                            cl.debug(m[0])
+                            cl.debug(m.group(0))
                         andMatch.append(m)
 
                     elif engine == 'glob':
