@@ -350,14 +350,8 @@ def constructClusterVecs():
 
 def constructPatternSearch():
 
-    def fnSearch(data,pattern):
-        data = data.split(' ')
-
-        match = False
-        for w in data:
-            match |= fnmatch.fnmatch(w,pattern)
-
-        return(match)
+    field = myCli.menu(['body','headline'],prompt = 'Select field to search:')
+    pattern = input('\nEnter regex:\n')
 
     def search(data,field,engine,pattern):
 
@@ -374,16 +368,10 @@ def constructPatternSearch():
                 for andClause in orClause:
 
                     pattern = andClause.strip()
-                    if engine == 'regex':
-                        m = re.search(pattern,entry[field])
-                        if m:
-                            cl.debug(m.group(0))
-                        andMatch.append(m)
-
-                    elif engine == 'glob':
-                        andMatch.append(fnSearch(entry[field],pattern))
-                    else:
-                        pass
+                    m = re.search(pattern,entry[field])
+                    if m:
+                        cl.debug(m.group(0))
+                    andMatch.append(m)
 
                 orMatch.append(all(andMatch))
 
@@ -394,11 +382,7 @@ def constructPatternSearch():
 
         return(result)
 
-    field = myCli.menu(['body','headline'],prompt = 'Select field to search:')
-    engine = myCli.menu(['regex','glob'],prompt = 'Select search engine:')
-    pattern = input('\nEnter search pattern (%s):\n'%(engine))
-
-    def patternSearch(data,field = field,engine = engine,pattern = pattern):
+    def patternSearch(data,field = field,engine = 'regex',pattern = pattern):
         data = stringToStdFormat(data.decode())
 
 #        with open('testResources/testjson.json','w') as jFile:
