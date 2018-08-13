@@ -47,7 +47,8 @@ class main():
 
         sourceOptions = [constructCsvDat,
                          constructDbDat,
-                         constructQueryDat]
+                         constructQueryDat,
+                         constructPDFdat]
 
         sourceSelection = myCli.functionMenu(sourceOptions,
                                              prompt = 'Select data source',
@@ -55,11 +56,6 @@ class main():
         session.sourceFunction = sourceSelection()
 
         ##################
-
-        #!
-
-
-        #!
 
         treatmentOptions = [constructAgpTreat,constructNlSep]
 

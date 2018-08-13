@@ -185,10 +185,27 @@ def constructQueryDat():
         jsonToCsv_r = pipeProcess('rscript',
                                   './modules/Pattern/jsonToCsv.r',
                                   input = getArticles_py.stdout)
-
         return(jsonToCsv_r.stdout)
 
     return(queryDat)
+
+def constructPDFdat():
+    '''
+    Read all PDFs under a directory with Unlit Ferment Typified
+    '''
+    directory = input('Please point to a directory containing PDF files:\n~ ')
+
+    def pdfDat():
+        unFeTy_py = pipeProcess('python',
+                                './modules/Unlit_ferment_typified/unFeTy.py',
+                                arguments = [directory,'stdout','-i'])
+        with open('.t/tee','w') as file:
+            file.write(unFeTy_py.stdout.decode())
+        jsonToCsv_r = pipeProcess('rscript',
+                                  './modules/Pattern/jsonToCsv.r',
+                                  input = unFeTy_py.stdout + b'\n')
+        return(jsonToCsv_r.stdout)
+    return(pdfDat)
 
 #####################################
 # Treatment functions

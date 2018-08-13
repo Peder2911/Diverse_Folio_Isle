@@ -25,7 +25,9 @@ if __name__ == '__main__':
     '''
     Hacks to list-of-dictionaries format
     '''
-    
+
+    csv.field_size_limit(sys.maxsize)
+
     ff = StringIO(sys.stdin.read())
     reader = csv.reader(ff)
     names = next(reader)

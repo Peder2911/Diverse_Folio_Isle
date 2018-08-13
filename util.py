@@ -12,9 +12,9 @@ class functions():
 
     def populateDB(self,source,rosterFile,dbFile):
 
-        try:            
+        try:
             call = ['python','./buildDB.py',source,rosterFile,dbFile]
-            processHelpers.run(call,errTo=sys.stderr)
+            subprocess.run(call)
         except subprocess.SubprocessError:
             print('oh no! (subprocess error)') #TODO error handling
             sys.exit(1)

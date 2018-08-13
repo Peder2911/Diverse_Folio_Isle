@@ -6,6 +6,8 @@ resources/temp/*
 
 .t/*
 
+resData/*
+
 out.csv
 cl.csv
 go
