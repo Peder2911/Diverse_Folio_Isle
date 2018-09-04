@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+import sys
+print(sys.version)
 import fire
 import os
 import sys
@@ -15,6 +17,7 @@ from logging.config import dictConfig
 import yaml
 import json
 import csv
+
 
 #####################################
 

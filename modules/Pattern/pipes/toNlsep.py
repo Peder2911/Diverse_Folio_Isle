@@ -47,7 +47,7 @@ if __name__ == '__main__':
     data = json.dumps(data)
 
     jsonToCsv_r = relPath('../jsonToCsv.r')
-    jsonToCsv_r = subprocess.run(['rscript',jsonToCsv_r],
+    jsonToCsv_r = subprocess.run(['Rscript',jsonToCsv_r],
                                  stdout = subprocess.PIPE,
                                  stderr = subprocess.PIPE,
                                  input = data.encode())

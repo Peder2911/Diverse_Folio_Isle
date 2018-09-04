@@ -83,7 +83,7 @@ def jsonToCsv(jsonString):
         jsonString = json.dumps(jsonString)
         jsonToCsv(jsonString)
 
-    jsonToCsv_r = pipeProcess('rscript',
+    jsonToCsv_r = pipeProcess('Rscript',
                               './modules/Pattern/jsonToCsv.r',
                               input = jsonString)
     return(jsonToCsv_r.stdout.decode())
@@ -158,7 +158,7 @@ def constructDbDat():
         arguments += [id]
 
     def dbDat(dbFile = dbFile,id = id,arguments = arguments):
-        sqliteQuery_r = pipeProcess('rscript',
+        sqliteQuery_r = pipeProcess('Rscript',
                                     './modules/Pattern/sqliteQuery.r',
                                     arguments = arguments)
         return(sqliteQuery_r.stdout)
@@ -179,10 +179,10 @@ def constructQueryDat():
         args += [loc]
 
     def queryDat(args = args):
-        getArticles_py = pipeProcess('python',
+        getArticles_py = pipeProcess('python3',
                                      './modules/Montanus/getArticles.py',
                                      arguments = args)
-        jsonToCsv_r = pipeProcess('rscript',
+        jsonToCsv_r = pipeProcess('Rscript',
                                   './modules/Pattern/jsonToCsv.r',
                                   input = getArticles_py.stdout)
         return(jsonToCsv_r.stdout)
@@ -196,12 +196,12 @@ def constructPDFdat():
     directory = input('Please point to a directory containing PDF files:\n~ ')
 
     def pdfDat():
-        unFeTy_py = pipeProcess('python',
+        unFeTy_py = pipeProcess('python3',
                                 './modules/Unlit_ferment_typified/unFeTy.py',
                                 arguments = [directory,'stdout','-i'])
         with open('.t/tee','w') as file:
             file.write(unFeTy_py.stdout.decode())
-        jsonToCsv_r = pipeProcess('rscript',
+        jsonToCsv_r = pipeProcess('Rscript',
                                   './modules/Pattern/jsonToCsv.r',
                                   input = unFeTy_py.stdout + b'\n')
         return(jsonToCsv_r.stdout)
@@ -227,7 +227,7 @@ def constructAgpTreat():
         data = json.dumps(data)
 
         def agpProcess(data,command):
-            p = pipeProcess('python',
+            p = pipeProcess('python3',
                             './modules/Able_Glooming_Pasture/abGloPa.py',
                             [command],
                             input=data.encode())
@@ -242,7 +242,7 @@ def constructAgpTreat():
         if '-no' in options or '--normalize' in options:
             p = agpProcess(data,'normalize')
 
-        jsonToCsv_r = pipeProcess('rscript',
+        jsonToCsv_r = pipeProcess('Rscript',
                                   './modules/Pattern/jsonToCsv.r',
                                   input = p.stdout)
 
@@ -272,7 +272,7 @@ def constructClassVecs():
                   vectorizer = vectorizer,
                   classifier = classifier):
 
-        classify_r = pipeProcess('rscript',
+        classify_r = pipeProcess('Rscript',
                                  './modules/Pattern/classify.r',
                                  [s2v,vectorizer,classifier],
                                  input = data)
@@ -295,7 +295,7 @@ def constructNlSep():
     def nlSep(data):
 
         if not skip:
-            call = ['python','./modules/Pattern/pipes/toNlsep.py']
+            call = ['python3','./modules/Pattern/pipes/toNlsep.py']
             p = subprocess.run(call,
                                stdout = subprocess.PIPE,
                                stderr = subprocess.PIPE,
@@ -308,7 +308,7 @@ def constructNlSep():
                     cl.warning(line)
 
         if separate or skip:
-            call = ['rscript','./modules/Pattern/bodyToSentence.R']
+            call = ['Rscript','./modules/Pattern/bodyToSentence.R']
             p = subprocess.run(call,
                                stdout = subprocess.PIPE,
                                stderr = subprocess.PIPE,
@@ -337,7 +337,7 @@ def constructClusterVecs():
                     vectorizer = vectorizer,
                     tracerFile = tracerFile):
 
-        cluster_r = pipeProcess('rscript',
+        cluster_r = pipeProcess('Rscript',
                                 './modules/Pattern/clusterPipe.r',
                                 [tracerFile,s2v,vectorizer],
                                 input = data)
@@ -391,7 +391,7 @@ def constructPatternSearch():
         data = search(data,field,engine,pattern)
         data = json.dumps(data)+'\n'
 
-        jsonToCsv_r = pipeProcess('rscript',
+        jsonToCsv_r = pipeProcess('Rscript',
                                   './modules/Pattern/jsonToCsv.r',
                                   input = data.encode())
 
