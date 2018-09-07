@@ -4,6 +4,8 @@ import os
 import sys
 import subprocess
 
+print(sys.path)
+
 from modules.util import dbTools
 from modules.myCli import myCli
 from modules.deScry import deScry
