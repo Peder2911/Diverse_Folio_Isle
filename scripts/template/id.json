@@ -1,0 +1,11 @@
+{
+ "interpreter":"python3",
+ "executable":"exec.py", "options":
+ 	{
+ 	"model":"filemenu scripts/template/models/",
+	"method":"listmenu lm,loess,gaussian,bayesian",
+	"arguments":"freetext",
+	"truncate":"boolean"
+	}
+}
+
