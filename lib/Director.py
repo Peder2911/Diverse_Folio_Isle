@@ -30,7 +30,7 @@ class Director():
     def __del__(self):
         [p.kill() for p in self.processes]
     
-    def lineup(self,scriptfolder):
+    def lineup(self,scriptfolder,masterConfig):
         # Select which scripts to execute by folder, and configures their options.
         # Uses several Cli things.
 
@@ -47,7 +47,7 @@ class Director():
                                     menutype = 'folder')
                 ]
         
-        options = [self.configure(script) for script in scripts]
+        options = [self.configure(script,masterConfig) for script in scripts]
 
         for script,option in OrderedDict(zip(scripts,options)).items():
             self.runScript(script,option)
@@ -73,8 +73,11 @@ class Director():
         while p.poll() is None:
             time.sleep(1)
             cl.debug('sleeping')
+        if p.poll() != 0:
+            cl.critical('Something went wrong with %s'%(scriptpath))
+            cl.critical('Exit code: %i'%(p.poll()))
 
-    def configure(self,scriptpath):
+    def configure(self,scriptpath,masterConfig):
         # Configure a script using its id.json file and the Cli
 
         iddoc = os.path.join(scriptpath,'id.json')
@@ -82,8 +85,10 @@ class Director():
             jload = json.load(file)
             options = jload['options']
             scriptname = jload['name']
-
+        
         def handle(option,handler,arg = None):
+            # Determine which type of CLI to use for option.
+
             print('\n# ' + scriptname + ' ' + '#'*(35-len(scriptname)))
             if handler == 'freetext':
                 sel = self.Cli.freetext('Enter %s'%(option))
@@ -111,6 +116,8 @@ class Director():
                 options[option] = handle(option,handler,arg=arg)
             else:
                 options[option] = handle(option,handler)
+
+        options.update(masterConfig)
         return(options)
 
 if __name__ == '__main__':
