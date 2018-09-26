@@ -23,6 +23,8 @@ class Session():
                              db = rconf['db'])
         self.checkRedis(self.Redis)
 
+        self.Redis.delete(rconf['listkey'])
+
     def checkRedis(self,r):
         if r.ping():
             print('Found Redis!')

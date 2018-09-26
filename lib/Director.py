@@ -58,11 +58,24 @@ class Director():
         
         iddoc = os.path.join(scriptpath,'id.json')
         with open(iddoc) as file:
-            jload = json.load(file)
-            interpreter = jload['interpreter']
-            executable = os.path.join(scriptpath,jload['executable'])
+            iddict = json.load(file)
+            interpreter = iddict['interpreter']
+            
+            if 'args' in iddict.keys():
+                args = iddict['args'].split()
+            else:
+                args = None
 
-        p = subprocess.Popen([interpreter,executable],
+            
+            executable = os.path.join(scriptpath,iddict['executable'])
+
+        call = [interpreter,executable]
+
+        if args is not None:
+            call += args
+
+        cl.debug('calling '+' '.join(call))
+        p = subprocess.Popen(call,
                             stdin = subprocess.PIPE)
 
         self.processes.append(p)
@@ -72,7 +85,8 @@ class Director():
 
         while p.poll() is None:
             time.sleep(1)
-            cl.debug('sleeping')
+            # This was too annoying
+            #cl.debug('sleeping')
         if p.poll() != 0:
             cl.critical('Something went wrong with %s'%(scriptpath))
             cl.critical('Exit code: %i'%(p.poll()))
@@ -82,9 +96,9 @@ class Director():
 
         iddoc = os.path.join(scriptpath,'id.json')
         with open(iddoc) as file:
-            jload = json.load(file)
-            options = jload['options']
-            scriptname = jload['name']
+            iddict = json.load(file)
+            options = iddict['options']
+            scriptname = iddict['name']
         
         def handle(option,handler,arg = None):
             # Determine which type of CLI to use for option.
