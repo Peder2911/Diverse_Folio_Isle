@@ -13,28 +13,33 @@ import subprocess
 import logging
 from collections import OrderedDict
 
+from dfitools import RedisFile
+
 mypath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(mypath)
 
 cl = logging.getLogger('console')
 
-from Cli import Cli
+from . import Cli
+from . import Script
+
 from myExceptions import IdError
 
 class Director():
     def __init__(self):
 
-        self.Cli = Cli(demarcate = True)
-        self.processes = []
+        self.Cli = Cli.Cli(demarcate = True)
+    #    self.processes = []
 
-    def __del__(self):
-        [p.kill() for p in self.processes]
+    #def __del__(self):
+    #    [p.kill() for p in self.processes]
     
     def lineup(self,scriptfolder,masterConfig):
         # Select which scripts to execute by folder, and configures their options.
         # Uses several Cli things.
 
         scriptfolder = os.path.join(mypath,scriptfolder)
+
         scripts = [
                 self.Cli.filemenu(os.path.join(scriptfolder,'sourcing'),
                                     prompt = 'Select sourcing script',
@@ -46,63 +51,28 @@ class Director():
                                     prompt = 'Select classification script',
                                     menutype = 'folder')
                 ]
-        
-        options = [self.configure(script,masterConfig) for script in scripts]
 
-        for script,option in OrderedDict(zip(scripts,options)).items():
-            self.runScript(script,option)
+        scripts = [Script.Script(pth) for pth in scripts]
 
-    def runScript(self,scriptpath,options):
-        # Run the executable, with the interpreter, both specified in the id.json doc.
-        # This function also writes options to the process, that are figured out earlier.
-        
-        iddoc = os.path.join(scriptpath,'id.json')
-        with open(iddoc) as file:
-            iddict = json.load(file)
-            interpreter = iddict['interpreter']
-            
-            if 'args' in iddict.keys():
-                args = iddict['args'].split()
-            else:
-                args = None
+        [self.configure(script,masterConfig) for script in scripts]
+        [script.run() for script in scripts]
 
-            
-            executable = os.path.join(scriptpath,iddict['executable'])
+        #for script,option in OrderedDict(zip(scripts,options)).items():
+        #   self.runScript(script,option)
 
-        call = [interpreter,executable]
+        f = RedisFile.RedisFile(listkey = 'data')
+        with open('tmp.csv','w') as file:
+            f.dump(file)
+    
+    def configure(self,script,masterConfig):
 
-        if args is not None:
-            call += args
-
-        cl.debug('calling '+' '.join(call))
-        p = subprocess.Popen(call,
-                            stdin = subprocess.PIPE)
-
-        self.processes.append(p)
-        options = json.dumps(options).encode()
-        p.stdin.write(options)
-        p.stdin.close()
-
-        while p.poll() is None:
-            time.sleep(1)
-            # This was too annoying
-            #cl.debug('sleeping')
-        if p.poll() != 0:
-            cl.critical('Something went wrong with %s'%(scriptpath))
-            cl.critical('Exit code: %i'%(p.poll()))
-
-    def configure(self,scriptpath,masterConfig):
         # Configure a script using its id.json file and the Cli
 
-        iddoc = os.path.join(scriptpath,'id.json')
-        with open(iddoc) as file:
-            iddict = json.load(file)
-            options = iddict['options']
-            scriptname = iddict['name']
-        
+        options = script.id['options']
+        scriptname = script.id['name']
+
         def handle(option,handler,arg = None):
             # Determine which type of CLI to use for option.
-
             print('\n# ' + scriptname + ' ' + '#'*(35-len(scriptname)))
             if handler == 'freetext':
                 sel = self.Cli.freetext('Enter %s'%(option))
@@ -118,7 +88,6 @@ class Director():
                     raise IdError('Dir not found when handling %s: %s'%(option,arg))
             else:
                 raise IdError('Misspecified handler for %s: %s'%(option,handler))
-
             return(sel)
 
         for option,value in options.items():
@@ -132,7 +101,7 @@ class Director():
                 options[option] = handle(option,handler)
 
         options.update(masterConfig)
-        return(options)
+        script.id['options'] = options
 
 if __name__ == '__main__':
     # Test suite

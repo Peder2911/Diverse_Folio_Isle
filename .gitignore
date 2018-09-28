@@ -7,8 +7,12 @@ scripts/preprocessing/*
 scripts/classification/*
 !scripts/classification/.gitkeep
 
+depr/*
+
 .R*
 *.pyc
 __pycache__/*
 
-out.csv
+out*
+tmp*
+tee*

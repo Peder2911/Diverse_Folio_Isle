@@ -1,0 +1,11 @@
+{
+ "name":"ems regex",
+ "interpreter":"Rscript",
+ "executable":"ems.R",
+ "args":"--dfi",
+ "options":
+ {
+	 "field to search":"listmenu headline,body",
+	 "regex pattern":"freetext" 
+ }
+}
