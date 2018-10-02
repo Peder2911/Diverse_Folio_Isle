@@ -24,7 +24,7 @@ class Script():
             args = self.id['args'].split()
             call += args
     
-        print('calling %s'%(' '.join(call)))
+        print('\ncalling %s'%(' '.join(call)))
 
 
         self.p = subprocess.Popen(call,

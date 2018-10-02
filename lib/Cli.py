@@ -43,17 +43,20 @@ class Cli():
     def filemenu(self,folder,prompt = 'select a file',menutype = 'file'):
         # Wrapper for menu, presenting choice in files or folders.
 
-        if menutype == 'file':
-            files = [f for f in os.listdir(folder)]# if os.path.isfile(f)]
-        elif menutype == 'folder':
-            cl.debug('checking %s'%(folder))
-            files = [f for f in os.listdir(folder)]# if os.path.isdir(f)]
-            cl.debug('found %i %s(s)'%(len(files),menutype))
+        # hide hidden files
+        files = [f for f in os.listdir(folder) if f[0] != '.']
 
         if len(files) == 0:
             raise FileNotFoundError('No %s(s) in %s'%(menutype,folder))
 
         paths = [os.path.join(folder,f) for f in files]
+
+        # only files or folders
+        if menutype == 'file':
+            paths = [p for p in paths if os.path.isfile(p)]
+        elif menutype == 'folder':
+            paths = [p for p in paths if os.path.isdir(p)]
+
         lookup = dict(zip(files,paths))
 
         choice = self.menu(files,prompt = prompt)
