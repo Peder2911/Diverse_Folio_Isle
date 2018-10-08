@@ -4,5 +4,7 @@
 	"port":"6379",
 	"db":"0",
 	"listkey":"data"
-	}
+	},
+"verbose":"y",
+"chunksize":1000
 }
