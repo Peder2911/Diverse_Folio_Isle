@@ -2,7 +2,10 @@ import subprocess
 import os
 import json
 import time
+import logging
 # Basic script class
+
+cl = logging.getLogger('console')
 
 class Script():
 
@@ -24,13 +27,16 @@ class Script():
             args = self.id['args'].split()
             call += args
     
-        print('\ncalling %s'%(' '.join(call)))
+        cl.debug('\ncalling %s'%(' '.join(call)))
 
 
         self.p = subprocess.Popen(call,
                                   stdin = subprocess.PIPE)
-        jsonOpts = json.dumps(self.id['options']).encode()
-        print(jsonOpts.decode())
+
+        jsonOpts = json.dumps(self.id['options'])
+        jsonOpts += '\n'
+        jsonOpts = jsonOpts.encode()
+
         self.p.stdin.write(jsonOpts)
         self.p.stdin.close()
 

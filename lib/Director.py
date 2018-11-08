@@ -27,12 +27,7 @@ from myExceptions import IdError
 
 class Director():
     def __init__(self):
-
         self.Cli = Cli.Cli(demarcate = True)
-    #    self.processes = []
-
-    #def __del__(self):
-    #    [p.kill() for p in self.processes]
     
     def lineup(self,scriptfolder,masterConfig):
         # Select which scripts to execute by folder, and configures their options.
@@ -54,16 +49,17 @@ class Director():
 
         scripts = [Script.Script(pth) for pth in scripts]
 
+        # Configure scripts
         [self.configure(script,masterConfig) for script in scripts]
+
+        # This is where the magic happens
         [script.run() for script in scripts]
 
-        #for script,option in OrderedDict(zip(scripts,options)).items():
-        #   self.runScript(script,option)
-
+        # And then dump the data (change this)
         f = RedisFile.RedisFile(listkey = 'data')
         with open('tmp.csv','w') as file:
-            f.dump(file)
-    
+            f.dump(file) 
+
     def configure(self,script,masterConfig):
 
         # Configure a script using its id.json file and the Cli

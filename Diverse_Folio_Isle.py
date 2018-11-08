@@ -21,8 +21,8 @@ class Session():
         self.Redis = redis.Redis(host = rconf['hostname'],
                              port = rconf['port'],
                              db = rconf['db'])
-        self.checkRedis(self.Redis)
 
+        self.checkRedis(self.Redis)
         self.Redis.delete(rconf['listkey'])
 
     def checkRedis(self,r):
