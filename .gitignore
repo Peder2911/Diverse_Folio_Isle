@@ -17,6 +17,6 @@ out*
 tmp*
 tee*
 testdat/*
-scripts/vectorization/sklTest scripts/vectorization/test
-resources/mypipe.pkl
-data/colombia_montanus_sentences.csv data/colombia_sentences.csv data/colombia_sentences_f.csv data/co_sent_f.csv data/out.csv data/red.csv data/tmp.csv
+scripts/vectorization/*
+data/*
+resources/*
