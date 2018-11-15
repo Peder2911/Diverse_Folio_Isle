@@ -20,3 +20,4 @@ testdat/*
 scripts/vectorization/*
 data/*
 resources/*
+!resources/.gitkeep
