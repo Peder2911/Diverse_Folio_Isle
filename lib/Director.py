@@ -9,11 +9,12 @@ import os
 import time
 
 import json
+import csv
+
 import subprocess
 import logging
 from collections import OrderedDict
 
-from dfitools import RedisFile
 
 mypath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(mypath)
@@ -24,6 +25,8 @@ from . import Cli
 from . import Script
 
 from myExceptions import IdError
+
+import redis
 
 class Director():
     def __init__(self):
@@ -56,9 +59,16 @@ class Director():
         [script.run() for script in scripts]
 
         # And then dump the data (change this)
-        f = RedisFile.RedisFile(listkey = 'data')
-        with open('tmp.csv','w') as file:
-            f.dump(file) 
+        r = redis.Redis()
+        dat = r.lrange('data',0,-1)
+        dat = [json.loads(r.decode()) for r in dat]
+
+        with open('tmp.json','w') as f:
+            json.dump(dat,f)
+        with open('tmp.csv','w') as f:
+            wr = csv.DictWriter(f,fieldnames = dat[0].keys())
+            wr.writeheader()
+            wr.writerows(dat)
 
     def configure(self,script,masterConfig):
 
